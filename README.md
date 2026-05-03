@@ -37,7 +37,6 @@ ZEX is a lightweight, offline desktop application for encrypting and decrypting 
 
 ## Screenshots
 
-> Add screenshots here after first release.
 ![Encrypt](assets/encrypt.png)
 >
 > 
