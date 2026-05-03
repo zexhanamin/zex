@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; script-src 'self'; img-src 'self' data:;" />
+  <title>ZEX — Secure File Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Space+Grotesk:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../renderer/style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════ CUSTOM TITLE BAR -->
+  <div class="title-bar" id="titleBar">
+    <span class="title-bar-text">ZEX — Zion Encrypted X-Layer</span>
+    <div class="title-bar-controls">
+      <button class="tb-btn tb-minimize" id="tbMinimize" title="Minimize">&#8722;</button>
+      <button class="tb-btn tb-maximize" id="tbMaximize" title="Maximize">&#9633;</button>
+      <button class="tb-btn tb-close"    id="tbClose"    title="Close">&#10005;</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ LOADING SCREEN -->
+  <div id="loadingScreen">
+    <div class="loading-title">ZEX</div>
+    <div class="loading-tagline">Zion Encrypted X-Layer</div>
+    <div class="loading-subtitle">Initializing secure vault…</div>
+    <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBarFill"></div></div>
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-block">
+        <span class="app-title">ZEX</span>
+        <span class="app-tagline">Zion Encrypted X-Layer</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="algo-badge">AES-256-GCM</span>
+      <span class="secure-indicator">
+        <span class="secure-dot"></span>
+        <span class="secure-label">SECURE</span>
+      </span>
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═════════════════════════════════════════ MAIN APP -->
+  <main class="app-main">
+
+    <nav class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true"  id="tabEnc">ENCRYPT</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" id="tabDec">DECRYPT</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" id="tabAudit">AUDIT LOG</button>
+    </nav>
+
+    <!-- ══════════════════════════════ ENCRYPT PANEL -->
+    <section class="panel" id="encPanel" role="tabpanel">
+
+      <!-- File Select -->
+      <div class="file-select-row">
+        <button class="btn btn-secondary" id="browseEncBtn">Browse</button>
+        <input type="text" class="file-path-input" id="encFilePath" placeholder="No file selected" readonly />
+      </div>
+
+      <!-- Extension -->
+      <div class="field-row field-row--wrap">
+        <label class="field-label">Extension:</label>
+        <input type="text" class="input-short" id="extInput" value="zex" maxlength="12" spellcheck="false" />
+        <button class="btn btn-ghost" id="resetExtBtn">Reset</button>
+        <span class="ext-badge" id="extBadge">.zex</span>
+      </div>
+
+      <!-- Custom Key -->
+      <div class="field-group">
+        <div class="field-group-header">
+          <label class="field-label">Custom Encryption Key <span class="optional-tag">optional</span></label>
+          <span class="field-hint">Leave blank to auto-generate</span>
+        </div>
+        <div class="field-row">
+          <input type="password" class="input-key" id="customKeyInput"
+                 placeholder="Paste Base64 key or leave blank…" spellcheck="false" autocomplete="off" />
+          <button class="btn btn-ghost" id="showCustomKeyBtn">Show</button>
+          <button class="btn btn-ghost" id="importKeyBtn" title="Import from .zexkey file">Import</button>
+        </div>
+        <!-- Key strength indicator -->
+        <div class="key-strength-wrap" id="keyStrengthWrap" hidden>
+          <div class="key-strength-bar">
+            <div class="key-strength-fill" id="keyStrengthFill"></div>
+          </div>
+          <span class="key-strength-label" id="keyStrengthLabel">—</span>
+        </div>
+      </div>
+
+      <!-- Output Folder -->
+      <div class="field-row field-row--spread">
+        <label class="field-label">Output folder <span class="optional-tag">optional</span></label>
+        <div class="field-row" style="gap:6px">
+          <input type="text" class="file-path-input" id="encOutputDir" placeholder="Same as source" readonly style="max-width:260px" />
+          <button class="btn btn-ghost" id="browseEncOutputBtn">Choose</button>
+          <button class="btn btn-ghost" id="clearEncOutputBtn">✕</button>
+        </div>
+      </div>
+
+      <!-- Secure wipe toggle -->
+      <div class="field-row field-row--spread">
+        <label class="field-label">
+          Secure wipe original <span class="optional-tag">3-pass DoD</span>
+          <span class="field-hint" style="display:block;margin-top:1px">Overwrites with zeros, ones, random data</span>
+        </label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="secureWipeToggle" />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+
+      <!-- Delete toggle -->
+      <div class="field-row field-row--spread">
+        <label class="field-label">Delete original after encryption</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="deleteToggle" />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="encProgressWrap" hidden>
+        <div class="progress-bar"><div class="progress-fill" id="encProgress" style="width:0%"></div></div>
+        <span class="progress-label" id="encStatus"></span>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="encryptBtn">Encrypt File</button>
+
+      <!-- Result card -->
+      <div class="result-card" id="encResult" hidden>
+        <div class="result-meta">
+          <div class="result-row"><span class="result-label">Output file</span><span class="result-value" id="encOutName">—</span></div>
+          <div class="result-row"><span class="result-label">Original size</span><span class="result-value" id="encOrigSize">—</span></div>
+          <div class="result-row"><span class="result-label">Encrypted size</span><span class="result-value" id="encEncSize">—</span></div>
+        </div>
+        <div class="key-section">
+          <label class="key-label">Decryption Key — save this now, it cannot be recovered</label>
+          <div class="key-box" id="encKeyBox" aria-readonly="true"></div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-outline" id="copyKeyBtn">Copy Key</button>
+          <button class="btn btn-ghost"   id="exportKeyBtn">Export .zexkey</button>
+          <button class="btn btn-ghost"   id="encResetBtn">Encrypt Another</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════ DECRYPT PANEL -->
+    <section class="panel" id="decPanel" role="tabpanel" hidden>
+
+      <!-- File Select -->
+      <div class="file-select-row">
+        <button class="btn btn-secondary" id="browseDecBtn">Browse</button>
+        <input type="text" class="file-path-input" id="decFilePath" placeholder="No file(s) selected" readonly />
+      </div>
+
+      <!-- Key input -->
+      <div class="field-row">
+        <input type="password" class="input-key" id="keyInput"
+               placeholder="Paste decryption key…" spellcheck="false" autocomplete="off" />
+        <button class="btn btn-ghost" id="showKeyBtn">Show</button>
+        <button class="btn btn-ghost" id="importDecKeyBtn" title="Import from .zexkey file">Import</button>
+      </div>
+
+      <!-- Output Folder -->
+      <div class="field-row field-row--spread">
+        <label class="field-label">Output folder <span class="optional-tag">optional</span></label>
+        <div class="field-row" style="gap:6px">
+          <input type="text" class="file-path-input" id="decOutputDir" placeholder="Same as source" readonly style="max-width:260px" />
+          <button class="btn btn-ghost" id="browseDecOutputBtn">Choose</button>
+          <button class="btn btn-ghost" id="clearDecOutputBtn">✕</button>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="decProgressWrap" hidden>
+        <div class="progress-bar"><div class="progress-fill" id="decProgress" style="width:0%"></div></div>
+        <span class="progress-label" id="decStatus"></span>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="decryptBtn">Decrypt File(s)</button>
+
+      <!-- Success -->
+      <div class="result-card result-card--success" id="decSuccess" hidden>
+        <div class="card-icon card-icon--success">✓</div>
+        <div class="result-meta">
+          <div class="result-row"><span class="result-label">Output file</span><span class="result-value" id="decOutName">—</span></div>
+          <div class="result-row"><span class="result-label">Decrypted size</span><span class="result-value" id="decOutSize">—</span></div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-ghost" id="decResetBtnSuccess">Decrypt Another</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div class="result-card result-card--error" id="decError" hidden>
+        <div class="card-icon card-icon--error">✕</div>
+        <p class="error-message" id="decErrorMsg">An error occurred.</p>
+        <div class="card-actions">
+          <button class="btn btn-ghost" id="decResetBtnError">Try Again</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════ AUDIT PANEL -->
+    <section class="panel" id="auditPanel" role="tabpanel" hidden>
+      <div class="audit-header">
+        <h2 class="audit-title">Audit Log</h2>
+        <div class="audit-actions">
+          <button class="btn btn-ghost"  id="refreshLogBtn">Refresh</button>
+          <button class="btn btn-danger" id="clearLogBtn">Clear Log</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="audit-table" id="auditTable">
+          <thead><tr><th>Timestamp</th><th>Action</th><th>Filename</th><th>Size</th><th>Status</th></tr></thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+      </div>
+      <div class="audit-empty" id="auditEmpty" hidden>No records yet.</div>
+    </section>
+
+  </main>
+
+  <!-- Keyboard shortcut hint bar -->
+  <div class="shortcut-bar">
+    <span><kbd>Ctrl+O</kbd> Browse</span>
+    <span><kbd>Ctrl+E</kbd> Encrypt</span>
+    <span><kbd>Ctrl+D</kbd> Decrypt</span>
+    <span><kbd>Ctrl+L</kbd> Audit Log</span>
+  </div>
+
+  <script src="renderer.js" defer></script>
+</body>
+</html>
