@@ -1,0 +1,41 @@
+# ── Dependencies ────────────────────────────────────────────────
+node_modules/
+
+# ── Build output ─────────────────────────────────────────────────
+dist/
+out/
+build/
+
+# ── Electron cache ───────────────────────────────────────────────
+.electron/
+electron-builder-cache/
+
+# ── Audit log (user data, not source) ───────────────────────────
+audit-log.json
+
+# ── OS files ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ── Logs ─────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Temp files ───────────────────────────────────────────────────
+*.tmp
+*.temp
+
+# ── Encrypted test files (don't commit these) ────────────────────
+*.zex
+*.zexkey
+
+# ── Environment ──────────────────────────────────────────────────
+.env
+.env.local
